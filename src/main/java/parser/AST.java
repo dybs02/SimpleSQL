@@ -67,4 +67,14 @@ class AST {
             this.valueFields = valueFields;
         }
     }
+
+    static class selectStatement extends Statement {
+        public String tableName;
+        public ArrayList<String> columnNames;
+
+        public selectStatement(String tableName, ArrayList<String> columnNames) {
+            this.tableName = tableName;
+            this.columnNames = columnNames;
+        }
+    }
 }

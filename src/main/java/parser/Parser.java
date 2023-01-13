@@ -53,7 +53,7 @@ public class Parser {
     }
 
     /**
-     * statement : createStatement | dropStatement | insertStatement
+     * statement : createStatement | dropStatement | insertStatement | selectStatement
      */
     private AST.Statement statement() throws InvalidSyntaxError {
         switch (currentToken.type) {
@@ -63,6 +63,8 @@ public class Parser {
                 return dropStatement();
             case INSERT:
                 return insertStatement();
+            case SELECT:
+                return selectStatement();
         }
         return null;
     }
@@ -249,5 +251,24 @@ public class Parser {
         }
 
         return val;
+    }
+
+    /**
+     * selectStatement : SELECT (ASTERISK | columnNames) FROM VARIABLE
+     */
+    private AST.Statement selectStatement() throws InvalidSyntaxError {
+        assertPop(Token.Type.SELECT);
+
+        ArrayList<String> columnNames = new ArrayList<>();
+        if (currentToken.type == Token.Type.ASTERISK) {
+            assertPop(Token.Type.ASTERISK);
+        } else {
+            columnNames = columnNames();
+        }
+
+        assertPop(Token.Type.FROM);
+        Token tableName = assertPop(Token.Type.VARIABLE);
+
+        return new AST.selectStatement(tableName.content, columnNames);
     }
 }
