@@ -16,8 +16,8 @@ class AST {
 
     static class createTableStatement extends Statement {
         public String tableName;
-        public ArrayList<Node> columns;
-        public createTableStatement(String tableName, ArrayList<Node> columns) {
+        public ArrayList<columnDefinition> columns;
+        public createTableStatement(String tableName, ArrayList<columnDefinition> columns) {
             this.tableName = tableName;
             this.columns = columns;
         }
@@ -48,4 +48,23 @@ class AST {
         }
     }
 
+    static class insertStatement extends Statement {
+        public String tableName;
+        public ArrayList<String> columnNames;
+        public ArrayList<valueDefinition> values;
+
+        public insertStatement(String tableName, ArrayList<String> columnNames, ArrayList<valueDefinition> values) {
+            this.tableName = tableName;
+            this.columnNames = columnNames;
+            this.values = values;
+        }
+    }
+
+    static class valueDefinition extends Node {
+        public ArrayList<String> valueFields;
+
+        public valueDefinition(ArrayList<String> valueFields) {
+            this.valueFields = valueFields;
+        }
+    }
 }

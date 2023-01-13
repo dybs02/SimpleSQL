@@ -53,7 +53,7 @@ public class Parser {
     }
 
     /**
-     * statement : createStatement | dropStatement
+     * statement : createStatement | dropStatement | insertStatement
      */
     private AST.Statement statement() throws InvalidSyntaxError {
         switch (currentToken.type) {
@@ -61,6 +61,8 @@ public class Parser {
                 return createStatement();
             case DROP:
                 return dropStatement();
+            case INSERT:
+                return insertStatement();
         }
         return null;
     }
@@ -95,7 +97,7 @@ public class Parser {
         assertPop(Token.Type.TABLE);
         Token name = assertPop(Token.Type.VARIABLE);
         assertPop(Token.Type.LPAREN);
-        ArrayList<AST.Node> columns = columnsDefinition();
+        ArrayList<AST.columnDefinition> columns = columnsDefinition();
         assertPop(Token.Type.RPAREN);
 
         return new AST.createTableStatement(name.content, columns);
@@ -104,8 +106,8 @@ public class Parser {
     /**
      * columnsDefinition : column (COLON column)*
      */
-    private ArrayList<AST.Node> columnsDefinition() throws InvalidSyntaxError {
-        ArrayList<AST.Node> columns = new ArrayList<>();
+    private ArrayList<AST.columnDefinition> columnsDefinition() throws InvalidSyntaxError {
+        ArrayList<AST.columnDefinition> columns = new ArrayList<>();
         columns.add(column());
 
         while (currentToken.type == Token.Type.COLON) {
@@ -119,7 +121,7 @@ public class Parser {
     /**
      * column : VARIABLE (INT | VARCHAR)
      */
-    private AST.Node column() throws InvalidSyntaxError {
+    private AST.columnDefinition column() throws InvalidSyntaxError {
         Token name = assertPop(Token.Type.VARIABLE);
         Token dataType;
 
@@ -163,5 +165,89 @@ public class Parser {
         Token name = assertPop(Token.Type.VARIABLE);
 
         return new AST.dropTableStatement(name.content);
+    }
+
+    /**
+     * insertStatement : INSERT INTO VARIABLE (LPAREN columnNames RPAREN)? VALUES values+
+     */
+    private AST.Statement insertStatement() throws InvalidSyntaxError {
+        assertPop(Token.Type.INSERT);
+        assertPop(Token.Type.INTO);
+        Token tableName = assertPop(Token.Type.VARIABLE);
+
+        ArrayList<String> columnNames = new ArrayList<>();
+        if (currentToken.type == Token.Type.LPAREN) {
+            assertPop(Token.Type.LPAREN);
+            columnNames = columnNames();
+            assertPop(Token.Type.RPAREN);
+        }
+
+        assertPop(Token.Type.VALUES);
+        ArrayList<AST.valueDefinition> values = valuesList();
+
+        return new AST.insertStatement(tableName.content, columnNames, values);
+    }
+
+    /**
+     * columnNames : VARIABLE (COLON VARIABLE)*
+     */
+    private ArrayList<String> columnNames() throws InvalidSyntaxError {
+        ArrayList<String> names = new ArrayList<>();
+
+        names.add(assertPop(Token.Type.VARIABLE).content);
+        while (currentToken.type == Token.Type.COLON) {
+            assertPop(Token.Type.COLON);
+            names.add(assertPop(Token.Type.VARIABLE).content);
+        }
+
+        return names;
+    }
+
+    /**
+     * valuesList : valueDefinition (COLON valueDefinition)*
+     */
+    private ArrayList<AST.valueDefinition> valuesList() throws InvalidSyntaxError {
+        ArrayList<AST.valueDefinition> valueDefinitions = new ArrayList<>();
+
+        valueDefinitions.add(valueDefinition());
+        while (currentToken.type == Token.Type.COLON) {
+            assertPop(Token.Type.COLON);
+            valueDefinitions.add(valueDefinition());
+        }
+
+        return valueDefinitions;
+    }
+
+    /**
+     * valueDefinition : LPAREN valueField (COLON valueField)* RPAREN
+     */
+    private AST.valueDefinition valueDefinition() throws InvalidSyntaxError {
+        ArrayList<String> valueFields = new ArrayList<>();
+
+        assertPop(Token.Type.LPAREN);
+        valueFields.add(valueField());
+        while (currentToken.type == Token.Type.COLON) {
+            assertPop(Token.Type.COLON);
+            valueFields.add(valueField());
+        }
+        assertPop(Token.Type.RPAREN);
+
+        return new AST.valueDefinition(valueFields);
+    }
+    
+    
+    /**
+     * valueField : (NUM | STRING)
+     */
+    private String valueField() throws InvalidSyntaxError {
+
+        String val;
+        if (currentToken.type == Token.Type.NUM) {
+            val = assertPop(Token.Type.NUM).content;
+        } else {
+            val = assertPop(Token.Type.STRING).content;
+        }
+
+        return val;
     }
 }
