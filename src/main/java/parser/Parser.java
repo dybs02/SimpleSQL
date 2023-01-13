@@ -1,7 +1,7 @@
 package main.java.parser;
 
 import main.java.exceptions.InvalidCharacterSequenceException;
-import main.java.exceptions.InvalidSyntaxError;
+import main.java.exceptions.InvalidSyntaxException;
 
 import java.util.ArrayList;
 
@@ -15,7 +15,7 @@ public class Parser {
         currentToken = tokens.remove(0);
     }
 
-    private Token assertPop(Token.Type type) throws InvalidSyntaxError {
+    private Token assertPop(Token.Type type) throws InvalidSyntaxException {
         Token popped = currentToken;
 
         if (currentToken.type == type) {
@@ -25,7 +25,7 @@ public class Parser {
                 currentToken = tokens.remove(0);
             }
         }else {
-            throw new InvalidSyntaxError(
+            throw new InvalidSyntaxException(
                     String.format("Invalid syntax: \"%s\" - expected %s", currentToken.content, type),
                     currentToken,
                     new Token(type, "")
@@ -34,14 +34,14 @@ public class Parser {
         return popped;
     }
 
-    public ArrayList<AST.Statement> parse() throws InvalidSyntaxError {
+    public ArrayList<AST.Statement> parse() throws InvalidSyntaxException {
         return query();
     }
 
     /**
      * query : statement SEMICOLON query*
      */
-    private ArrayList<AST.Statement> query() throws InvalidSyntaxError {
+    private ArrayList<AST.Statement> query() throws InvalidSyntaxException {
         ArrayList<AST.Statement> queries = new ArrayList<>();
 
         while (currentToken != null) {
@@ -55,7 +55,7 @@ public class Parser {
     /**
      * statement : createStatement | dropStatement | insertStatement | selectStatement
      */
-    private AST.Statement statement() throws InvalidSyntaxError {
+    private AST.Statement statement() throws InvalidSyntaxException {
         switch (currentToken.type) {
             case CREATE:
                 return createStatement();
@@ -72,7 +72,7 @@ public class Parser {
     /**
      * createStatement : CREATE (createDatabaseStatement | createTableStatement)
      */
-    public AST.Statement createStatement() throws InvalidSyntaxError {
+    public AST.Statement createStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.CREATE);
 
         if (currentToken.type == Token.Type.DATABASE) {
@@ -85,7 +85,7 @@ public class Parser {
     /**
      * createDatabaseStatement : DATABASE VARIABLE
      */
-    private AST.Statement createDatabaseStatement() throws InvalidSyntaxError {
+    private AST.Statement createDatabaseStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.DATABASE);
         Token name = assertPop(Token.Type.VARIABLE);
 
@@ -95,7 +95,7 @@ public class Parser {
     /**
      * createTableStatement : TABLE VARIABLE LPAREN columnsDefinition RPAREN
      */
-    private AST.Statement createTableStatement() throws InvalidSyntaxError {
+    private AST.Statement createTableStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.TABLE);
         Token name = assertPop(Token.Type.VARIABLE);
         assertPop(Token.Type.LPAREN);
@@ -108,7 +108,7 @@ public class Parser {
     /**
      * columnsDefinition : column (COLON column)*
      */
-    private ArrayList<AST.columnDefinition> columnsDefinition() throws InvalidSyntaxError {
+    private ArrayList<AST.columnDefinition> columnsDefinition() throws InvalidSyntaxException {
         ArrayList<AST.columnDefinition> columns = new ArrayList<>();
         columns.add(column());
 
@@ -123,7 +123,7 @@ public class Parser {
     /**
      * column : VARIABLE (INT | VARCHAR)
      */
-    private AST.columnDefinition column() throws InvalidSyntaxError {
+    private AST.columnDefinition column() throws InvalidSyntaxException {
         Token name = assertPop(Token.Type.VARIABLE);
         Token dataType;
 
@@ -139,7 +139,7 @@ public class Parser {
     /**
      * dropStatement : DROP (dropDatabaseStatement | dropTableStatement)
      */
-    private AST.Statement dropStatement() throws InvalidSyntaxError {
+    private AST.Statement dropStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.DROP);
 
         if (currentToken.type == Token.Type.DATABASE) {
@@ -152,7 +152,7 @@ public class Parser {
     /**
      * dropDatabaseStatement : DATABASE VARIABLE
      */
-    private AST.Statement dropDatabaseStatement() throws InvalidSyntaxError {
+    private AST.Statement dropDatabaseStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.DATABASE);
         Token name = assertPop(Token.Type.VARIABLE);
 
@@ -162,7 +162,7 @@ public class Parser {
     /**
      * dropTableStatement : TABLE VARIABLE
      */
-    private AST.Statement dropTableStatement() throws InvalidSyntaxError {
+    private AST.Statement dropTableStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.TABLE);
         Token name = assertPop(Token.Type.VARIABLE);
 
@@ -172,7 +172,7 @@ public class Parser {
     /**
      * insertStatement : INSERT INTO VARIABLE (LPAREN columnNames RPAREN)? VALUES values+
      */
-    private AST.Statement insertStatement() throws InvalidSyntaxError {
+    private AST.Statement insertStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.INSERT);
         assertPop(Token.Type.INTO);
         Token tableName = assertPop(Token.Type.VARIABLE);
@@ -193,7 +193,7 @@ public class Parser {
     /**
      * columnNames : VARIABLE (COLON VARIABLE)*
      */
-    private ArrayList<String> columnNames() throws InvalidSyntaxError {
+    private ArrayList<String> columnNames() throws InvalidSyntaxException {
         ArrayList<String> names = new ArrayList<>();
 
         names.add(assertPop(Token.Type.VARIABLE).content);
@@ -208,7 +208,7 @@ public class Parser {
     /**
      * valuesList : valueDefinition (COLON valueDefinition)*
      */
-    private ArrayList<AST.valueDefinition> valuesList() throws InvalidSyntaxError {
+    private ArrayList<AST.valueDefinition> valuesList() throws InvalidSyntaxException {
         ArrayList<AST.valueDefinition> valueDefinitions = new ArrayList<>();
 
         valueDefinitions.add(valueDefinition());
@@ -223,7 +223,7 @@ public class Parser {
     /**
      * valueDefinition : LPAREN valueField (COLON valueField)* RPAREN
      */
-    private AST.valueDefinition valueDefinition() throws InvalidSyntaxError {
+    private AST.valueDefinition valueDefinition() throws InvalidSyntaxException {
         ArrayList<String> valueFields = new ArrayList<>();
 
         assertPop(Token.Type.LPAREN);
@@ -241,7 +241,7 @@ public class Parser {
     /**
      * valueField : (NUM | STRING)
      */
-    private String valueField() throws InvalidSyntaxError {
+    private String valueField() throws InvalidSyntaxException {
 
         String val;
         if (currentToken.type == Token.Type.NUM) {
@@ -256,7 +256,7 @@ public class Parser {
     /**
      * selectStatement : SELECT (ASTERISK | columnNames) FROM VARIABLE
      */
-    private AST.Statement selectStatement() throws InvalidSyntaxError {
+    private AST.Statement selectStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.SELECT);
 
         ArrayList<String> columnNames = new ArrayList<>();
