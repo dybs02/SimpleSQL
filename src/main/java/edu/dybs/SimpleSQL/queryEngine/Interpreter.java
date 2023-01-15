@@ -1,5 +1,8 @@
 package edu.dybs.SimpleSQL.queryEngine;
 
+import edu.dybs.SimpleSQL.exceptions.DatabaseManagementException;
+import edu.dybs.SimpleSQL.storageEngine.DatabaseHandler;
+
 import java.util.ArrayList;
 
 public class Interpreter {
@@ -10,12 +13,17 @@ public class Interpreter {
         this.queries = queries;
     }
 
-    public void interpret() {
+    public void interpret() throws DatabaseManagementException {
         for (AST.Statement query : queries) {
             if (query instanceof AST.createDatabaseStatement) {
-                System.out.println("instanceof AST.createDatabaseStatement");
+                DatabaseHandler.createDatabase(
+                        ((AST.createDatabaseStatement) query).databaseName
+                );
             } else if (query instanceof AST.createTableStatement) {
-                System.out.println("instanceof AST.createTableStatement");
+                DatabaseHandler.createTable(
+                        ((AST.createTableStatement) query).tableName,
+                        ((AST.createTableStatement) query).columns
+                );
             } else if (query instanceof AST.dropDatabaseStatement) {
                 System.out.println("instanceof AST.dropDatabaseStatement");
             } else if (query instanceof AST.dropTableStatement) {
