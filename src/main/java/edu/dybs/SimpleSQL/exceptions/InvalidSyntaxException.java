@@ -1,7 +1,7 @@
 package edu.dybs.SimpleSQL.exceptions;
 
 
-import edu.dybs.SimpleSQL.parser.Token;
+import edu.dybs.SimpleSQL.queryEngine.Token;
 
 public class InvalidSyntaxException extends Exception {
     public Token given;

@@ -1,4 +1,4 @@
-package edu.dybs.SimpleSQL.parser;
+package edu.dybs.SimpleSQL.queryEngine;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

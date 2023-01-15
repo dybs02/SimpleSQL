@@ -1,7 +1,7 @@
 package edu.dybs.SimpleSQL;
 
 import edu.dybs.SimpleSQL.exceptions.*;
-import edu.dybs.SimpleSQL.parser.*;
+import edu.dybs.SimpleSQL.queryEngine.*;
 
 import java.util.ArrayList;
 
