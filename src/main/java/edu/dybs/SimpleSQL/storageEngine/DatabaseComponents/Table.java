@@ -123,24 +123,50 @@ public class Table {
     }
 
     public void select(ArrayList<String> columnNames) throws DatabaseManagementException {
+        ArrayList<Integer> columnIndexes = getColumnIndexes(columnNames);
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(this.file));
             String line = reader.readLine();
 
             while (line != null) {
-                String[] values = line.split(";");
-
-                StringBuilder row = new StringBuilder();
-                for (String value : values) {
-                    row.append(value).append(" ".repeat(LINE_WIDTH - value.length()));
-                }
-                System.out.println(row);
-
+                System.out.println(buildRowLine(line, columnIndexes));
                 line = reader.readLine();
             }
         } catch (IOException e) {
             throw new DatabaseManagementException("Unable to access file: " + this.file.getName(), this.name);
         }
+    }
+
+    private ArrayList<Integer> getColumnIndexes(ArrayList<String> columnNames) throws DatabaseManagementException {
+        ArrayList<Integer> columnIndexes = new ArrayList<>();
+
+        for (int i = 0; i < columnDefinitions.size(); i++) {
+            String cdName = columnDefinitions.get(i).name;
+            if (columnNames.contains(cdName)) {
+                columnIndexes.add(i);
+                columnNames.remove(cdName);
+            }
+        }
+
+        if (!columnNames.isEmpty()) {
+            throw new DatabaseManagementException("Invalid column name: " + columnNames, this.name);
+        }
+        return columnIndexes;
+    }
+
+    private String buildRowLine(String line, ArrayList<Integer> columnIndexes) {
+        String[] values = line.split(";", -1);
+        StringBuilder row = new StringBuilder();
+
+        for (int i = 0; i < columnDefinitions.size(); i++) {
+            if (columnIndexes.contains(i) || columnIndexes.isEmpty()) {
+                row.append(values[i]);
+                row.append(" ".repeat(Math.max(LINE_WIDTH - values[i].length(), 0)));
+            }
+        }
+
+        return row.toString();
     }
 
     private void appendLines(ArrayList<String> lines) throws DatabaseManagementException {
