@@ -1,4 +1,4 @@
-package main.java.parser;
+package edu.dybs.SimpleSQL.parser;
 
 import java.util.ArrayList;
 

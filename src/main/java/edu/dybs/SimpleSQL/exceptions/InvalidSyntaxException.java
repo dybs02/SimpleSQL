@@ -1,6 +1,7 @@
-package main.java.exceptions;
+package edu.dybs.SimpleSQL.exceptions;
 
-import main.java.parser.Token;
+
+import edu.dybs.SimpleSQL.parser.Token;
 
 public class InvalidSyntaxException extends Exception {
     public Token given;

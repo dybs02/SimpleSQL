@@ -1,4 +1,4 @@
-package main.java.exceptions;
+package edu.dybs.SimpleSQL.exceptions;
 
 public class InvalidCharacterSequenceException extends Exception {
     public String syntaxError;

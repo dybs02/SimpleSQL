@@ -1,7 +1,8 @@
-package main.java.parser;
+package edu.dybs.SimpleSQL.parser;
+
+import edu.dybs.SimpleSQL.exceptions.InvalidCharacterSequenceException;
 
 import java.util.ArrayList;
-import main.java.exceptions.InvalidCharacterSequenceException;
 
 public class Lexer {
     private final String originalInput;

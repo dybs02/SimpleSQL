@@ -1,7 +1,7 @@
-package main.java.parser;
+package edu.dybs.SimpleSQL.parser;
 
-import main.java.exceptions.InvalidCharacterSequenceException;
-import main.java.exceptions.InvalidSyntaxException;
+
+import edu.dybs.SimpleSQL.exceptions.*;
 
 import java.util.ArrayList;
 
