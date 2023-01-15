@@ -2,7 +2,7 @@ package edu.dybs.SimpleSQL.queryEngine;
 
 import java.util.ArrayList;
 
-class AST {
+public class AST {
     static abstract class Node {}
     static abstract class Statement extends Node {}
 
@@ -23,7 +23,7 @@ class AST {
         }
     }
 
-    static class columnDefinition extends Node {
+    public static class columnDefinition extends Node {
         public String name;
         public Token.Type dataType;
         public columnDefinition(String name, Token.Type dataType) {
@@ -60,7 +60,7 @@ class AST {
         }
     }
 
-    static class valueDefinition extends Node {
+    public static class valueDefinition extends Node {
         public ArrayList<String> valueFields;
 
         public valueDefinition(ArrayList<String> valueFields) {
