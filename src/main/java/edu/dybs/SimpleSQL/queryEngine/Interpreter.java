@@ -33,7 +33,11 @@ public class Interpreter {
                         ((AST.dropTableStatement) query).tableName
                 );
             } else if (query instanceof AST.insertStatement) {
-                System.out.println("instanceof AST.insertStatement");
+                DatabaseHandler.insertValues(
+                        ((AST.insertStatement) query).tableName,
+                        ((AST.insertStatement) query).columnNames,
+                        ((AST.insertStatement) query).values
+                );
             } else if (query instanceof AST.selectStatement) {
                 System.out.println("instanceof AST.selectStatement");
             }

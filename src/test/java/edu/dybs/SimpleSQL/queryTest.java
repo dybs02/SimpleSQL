@@ -14,7 +14,10 @@ public class queryTest {
         testParser("CREATE TABLE students (id int, name varchar, age int);");
         testParser("CREATE TABLE teachers (name varchar, age int, subject varchar);");
 //        testParser("DROP DATABASE school;");
-        testParser("DROP TABLE students;");
+//        testParser("DROP TABLE students;");
+        testParser("INSERT INTO students VALUES (1, 'Jim', 28);");
+        testParser("INSERT INTO students VALUES (2, 'Pam', 26), (3, 'Michael', 42);");
+        testParser("INSERT INTO students (id, name) VALUES (4, 'Creed');");
 
     }
 

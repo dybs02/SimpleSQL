@@ -7,6 +7,7 @@ import edu.dybs.SimpleSQL.queryEngine.Token;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Table {
@@ -37,12 +38,8 @@ public class Table {
             columnTypes.append(column.dataType.name()).append(";");
         }
 
-        try {
-            appendLine(columnNames.toString());
-            appendLine(columnTypes.toString());
-        } catch (IOException e) {
-            throw new DatabaseManagementException("Unable to access file: " + this.file.getName(), this.name);
-        }
+        appendLine(columnNames.toString());
+        appendLine(columnTypes.toString());
     }
 
     /**
@@ -71,17 +68,74 @@ public class Table {
         }
     }
 
-    private void appendLines(ArrayList<String> lines) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+    public void insert(ArrayList<String> columnNames, ArrayList<AST.valueDefinition> valueDefinitions) throws DatabaseManagementException {
+        ArrayList<String> lines = new ArrayList<>();
 
-        for (String line : lines) {
-            writer.append(line + "\n");
+        if (columnNames.isEmpty()) {
+            for (AST.columnDefinition cd : columnDefinitions) {
+                columnNames.add(cd.name);
+            }
+        }
+        String template = getColumnStringTemplate((ArrayList<String>) columnNames.clone());
+
+        for (AST.valueDefinition valueDef : valueDefinitions) {
+            if (valueDef.valueFields.size() != columnNames.size()) {
+                throw new DatabaseManagementException("Invalid number of values to insert", this.name);
+            }
+
+            lines.add(populateTemplate(template, valueDef));
         }
 
-        writer.close();
+        appendLines(lines);
     }
 
-    private void appendLine(String line) throws IOException {
+    private String getColumnStringTemplate(ArrayList<String> columnNames) throws DatabaseManagementException {
+        String[] template = new String[columnDefinitions.size()];
+        Arrays.fill(template, ";");
+        int columnNamesSize = columnNames.size();
+
+        for (int i = 0; i < columnDefinitions.size(); i++) {
+            String cdName = columnDefinitions.get(i).name;
+            if (columnNames.contains(cdName)) {
+                template[i] = "{" + (columnNamesSize - columnNames.size()) + "};";
+                columnNames.remove(cdName);
+            }
+        }
+
+        if (!columnNames.isEmpty()) {
+            throw new DatabaseManagementException("Invalid column name: " + columnNames, this.name);
+        }
+
+        return String.join("", template);
+    }
+
+    private String populateTemplate(String template, AST.valueDefinition valueDef) {
+        int i = 0;
+
+        for (String value : valueDef.valueFields) {
+            template = template.replace("{" + i + "}", value); // TODO check type
+
+            i++;
+        }
+
+        return template;
+    }
+
+    private void appendLines(ArrayList<String> lines) throws DatabaseManagementException {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+
+            for (String line : lines) {
+                writer.append(line + "\n");
+            }
+
+            writer.close();
+        } catch (IOException e) {
+            throw new DatabaseManagementException("Unable to access file: " + this.file.getName(), this.name);
+        }
+    }
+
+    private void appendLine(String line) throws DatabaseManagementException {
         ArrayList<String> l = new ArrayList<>();
         l.add(line);
         appendLines(l);

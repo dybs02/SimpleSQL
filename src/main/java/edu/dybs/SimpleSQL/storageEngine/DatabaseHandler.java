@@ -56,6 +56,15 @@ public class DatabaseHandler {
         deleteDir(t);
     }
 
+    public static void insertValues(String tableName, ArrayList<String> columnNames, ArrayList<AST.valueDefinition> values) throws DatabaseManagementException {
+        Table table = currentDB.getTable(tableName);
+        if (table == null) {
+            throw new DatabaseManagementException("Table does not exist");
+        }
+
+        table.insert(columnNames, values);
+    }
+
     private static void deleteDir(File element) {
         if (element.isDirectory()) {
             for (File sub : element.listFiles()) {
