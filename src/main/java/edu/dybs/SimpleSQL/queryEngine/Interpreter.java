@@ -39,7 +39,10 @@ public class Interpreter {
                         ((AST.insertStatement) query).values
                 );
             } else if (query instanceof AST.selectStatement) {
-                System.out.println("instanceof AST.selectStatement");
+                DatabaseHandler.selectColumns(
+                        ((AST.selectStatement) query).tableName,
+                        ((AST.selectStatement) query).columnNames
+                );
             }
         }
     }

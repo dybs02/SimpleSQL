@@ -14,6 +14,7 @@ public class Table {
     String name;
     File file;
     ArrayList<AST.columnDefinition> columnDefinitions;
+    private final int LINE_WIDTH = 20;
 
     /**
      * Create new table
@@ -119,6 +120,27 @@ public class Table {
         }
 
         return template;
+    }
+
+    public void select(ArrayList<String> columnNames) throws DatabaseManagementException {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(this.file));
+            String line = reader.readLine();
+
+            while (line != null) {
+                String[] values = line.split(";");
+
+                StringBuilder row = new StringBuilder();
+                for (String value : values) {
+                    row.append(value).append(" ".repeat(LINE_WIDTH - value.length()));
+                }
+                System.out.println(row);
+
+                line = reader.readLine();
+            }
+        } catch (IOException e) {
+            throw new DatabaseManagementException("Unable to access file: " + this.file.getName(), this.name);
+        }
     }
 
     private void appendLines(ArrayList<String> lines) throws DatabaseManagementException {

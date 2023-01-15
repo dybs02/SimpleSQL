@@ -65,6 +65,15 @@ public class DatabaseHandler {
         table.insert(columnNames, values);
     }
 
+    public static void selectColumns(String tableName, ArrayList<String> columnNames) throws DatabaseManagementException {
+        Table table = currentDB.getTable(tableName);
+        if (table == null) {
+            throw new DatabaseManagementException("Table does not exist");
+        }
+
+        table.select(columnNames);
+    }
+
     private static void deleteDir(File element) {
         if (element.isDirectory()) {
             for (File sub : element.listFiles()) {
