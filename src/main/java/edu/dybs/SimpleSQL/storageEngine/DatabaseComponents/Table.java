@@ -19,7 +19,7 @@ public class Table {
      */
     public Table(Path path, String name, ArrayList<AST.columnDefinition> columnDefinitions) throws DatabaseManagementException {
         this.name = name;
-        path = path.resolve("name");
+        path = path.resolve(name);
         this.file = new File(path.toString() + ".txt");
         this.columnDefinitions = columnDefinitions;
 
