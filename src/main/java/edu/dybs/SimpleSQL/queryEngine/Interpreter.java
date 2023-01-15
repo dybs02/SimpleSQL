@@ -29,7 +29,9 @@ public class Interpreter {
                         ((AST.dropDatabaseStatement) query).databaseName
                 );
             } else if (query instanceof AST.dropTableStatement) {
-                System.out.println("instanceof AST.dropTableStatement");
+                DatabaseHandler.dropTable(
+                        ((AST.dropTableStatement) query).tableName
+                );
             } else if (query instanceof AST.insertStatement) {
                 System.out.println("instanceof AST.insertStatement");
             } else if (query instanceof AST.selectStatement) {

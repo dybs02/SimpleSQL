@@ -45,6 +45,17 @@ public class DatabaseHandler {
         }
     }
 
+    public static void dropTable(String tableName) throws DatabaseManagementException {
+        Path tPath = currentDB.getPath().resolve(tableName + ".txt");
+        File t = new File(tPath.toString());
+
+        if (!Files.exists(tPath)) {
+            throw new DatabaseManagementException("Table does not exist");
+        }
+
+        deleteDir(t);
+    }
+
     private static void deleteDir(File element) {
         if (element.isDirectory()) {
             for (File sub : element.listFiles()) {

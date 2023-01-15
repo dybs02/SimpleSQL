@@ -12,7 +12,9 @@ public class queryTest {
 
         testParser("CREATE DATABASE school;");
         testParser("CREATE TABLE students (id int, name varchar, age int);");
-        testParser("DROP DATABASE school;");
+        testParser("CREATE TABLE teachers (name varchar, age int, subject varchar);");
+//        testParser("DROP DATABASE school;");
+        testParser("DROP TABLE students;");
 
     }
 
