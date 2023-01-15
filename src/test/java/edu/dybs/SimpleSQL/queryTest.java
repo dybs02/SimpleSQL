@@ -2,7 +2,6 @@ package edu.dybs.SimpleSQL;
 
 import edu.dybs.SimpleSQL.queryEngine.*;
 import edu.dybs.SimpleSQL.exceptions.*;
-import edu.dybs.SimpleSQL.storageEngine.DatabaseHandler;
 
 import java.io.File;
 
@@ -13,6 +12,7 @@ public class queryTest {
 
         testParser("CREATE DATABASE school;");
         testParser("CREATE TABLE students (id int, name varchar, age int);");
+        testParser("DROP DATABASE school;");
 
     }
 

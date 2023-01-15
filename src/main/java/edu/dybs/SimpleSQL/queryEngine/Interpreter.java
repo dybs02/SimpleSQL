@@ -25,7 +25,9 @@ public class Interpreter {
                         ((AST.createTableStatement) query).columns
                 );
             } else if (query instanceof AST.dropDatabaseStatement) {
-                System.out.println("instanceof AST.dropDatabaseStatement");
+                DatabaseHandler.dropDatabase(
+                        ((AST.dropDatabaseStatement) query).databaseName
+                );
             } else if (query instanceof AST.dropTableStatement) {
                 System.out.println("instanceof AST.dropTableStatement");
             } else if (query instanceof AST.insertStatement) {

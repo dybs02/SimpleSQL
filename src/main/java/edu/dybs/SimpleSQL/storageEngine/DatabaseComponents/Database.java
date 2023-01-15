@@ -59,4 +59,8 @@ public class Database {
     public Table getTable(String name) {
         return tables.get(name);
     }
+
+    public String getName() {
+        return name;
+    }
 }
