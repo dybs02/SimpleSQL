@@ -82,4 +82,8 @@ public class DatabaseHandler {
         }
         element.delete();
     }
+
+    public static String getDBName() {
+        return currentDB != null ? currentDB.getName() : "";
+    }
 }
