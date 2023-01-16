@@ -28,6 +28,11 @@ public class SimpleSQLCli {
                 continue;
             }
 
+            if (DatabaseHandler.getDBName().equals("")) {
+                System.out.println("ERROR: Database not specified");
+                continue;
+            }
+
             input += ";";
             try {
                 Lexer l = new Lexer(input);
@@ -36,8 +41,6 @@ public class SimpleSQLCli {
                 i.interpret();
             } catch (SimpleSQLException e) {
                 System.out.println("ERROR: " + e.getMessage());
-            } catch (NullPointerException e) {
-                System.out.println("ERROR: Database not specified");
             }
         }
     }
