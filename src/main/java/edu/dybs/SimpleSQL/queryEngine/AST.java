@@ -71,10 +71,24 @@ public class AST {
     static class selectStatement extends Statement {
         public String tableName;
         public ArrayList<String> columnNames;
+        public whereCondition condition;
 
-        public selectStatement(String tableName, ArrayList<String> columnNames) {
+        public selectStatement(String tableName, ArrayList<String> columnNames, whereCondition condition) {
             this.tableName = tableName;
             this.columnNames = columnNames;
+            this.condition = condition;
+        }
+    }
+
+    public static class whereCondition extends Node {
+        public String columnName;
+        public String operator;
+        public String value;
+
+        public whereCondition(String columnName, String operator, String value) {
+            this.columnName = columnName;
+            this.operator = operator;
+            this.value = value;
         }
     }
 }

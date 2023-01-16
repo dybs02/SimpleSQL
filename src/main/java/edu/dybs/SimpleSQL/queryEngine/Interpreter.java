@@ -41,7 +41,8 @@ public class Interpreter {
             } else if (query instanceof AST.selectStatement) {
                 DatabaseHandler.selectColumns(
                         ((AST.selectStatement) query).tableName,
-                        ((AST.selectStatement) query).columnNames
+                        ((AST.selectStatement) query).columnNames,
+                        ((AST.selectStatement) query).condition
                 );
             }
         }

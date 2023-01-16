@@ -254,7 +254,7 @@ public class Parser {
     }
 
     /**
-     * selectStatement : SELECT (ASTERISK | columnNames) FROM VARIABLE
+     * selectStatement : SELECT (ASTERISK | columnNames) FROM VARIABLE WHERE condition
      */
     private AST.Statement selectStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.SELECT);
@@ -269,6 +269,30 @@ public class Parser {
         assertPop(Token.Type.FROM);
         Token tableName = assertPop(Token.Type.VARIABLE);
 
-        return new AST.selectStatement(tableName.content, columnNames);
+        AST.whereCondition condition = null;
+        if (currentToken.type == Token.Type.WHERE) {
+            assertPop(Token.Type.WHERE);
+            condition = condition();
+        }
+
+        return new AST.selectStatement(tableName.content, columnNames, condition);
+    }
+
+    /**
+     * condition : VARIABLE (EQUALS | LESS_THAN | GREATER_THAN) valueField
+     */
+    private AST.whereCondition condition() throws InvalidSyntaxException {
+        Token columnName = assertPop(Token.Type.VARIABLE);
+        Token operator;
+        if (currentToken.type == Token.Type.EQUALS) {
+            operator = assertPop(Token.Type.EQUALS);
+        } else if (currentToken.type == Token.Type.LESS_THAN) {
+            operator = assertPop(Token.Type.LESS_THAN);
+        } else {
+            operator = assertPop(Token.Type.GREATER_THAN);
+        }
+        String value = valueField();
+
+        return new AST.whereCondition(columnName.content, operator.content, value);
     }
 }

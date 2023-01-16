@@ -40,9 +40,10 @@ public class Database {
         File[] files = path.toFile().listFiles();
         if (files != null) {
             for (File file : files) {
+                Table table = new Table(file.toPath());
                 tables.put(
-                        file.getName(),
-                        new Table(file.toPath())
+                        table.name,
+                        table
                 );
             }
         }

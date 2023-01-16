@@ -7,6 +7,7 @@ public class Token {
     public enum Type {
         SELECT("(?i)select"),
         FROM("(?i)from"),
+        WHERE("(?i)where"),
         INSERT("(?i)insert"),
         INTO("(?i)into"),
         VALUES("(?i)values"),
@@ -22,6 +23,8 @@ public class Token {
         LPAREN("[(]"),
         RPAREN("[)]"),
         EQUALS("="),
+        LESS_THAN("[<]"),
+        GREATER_THAN("[>]"),
         ASTERISK("[*]"),
         COLON(","),
         SEMICOLON(";"),

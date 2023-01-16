@@ -47,7 +47,7 @@ public class Table {
      * Load existing table
      */
     public Table(Path path) throws DatabaseManagementException {
-        this.name = String.valueOf(path.getFileName());
+        this.name = String.valueOf(path.getFileName()).split("[.]")[0];
         this.file = new File(path.toString());
 
         ArrayList<String> columnNames;
@@ -122,15 +122,22 @@ public class Table {
         return template;
     }
 
-    public void select(ArrayList<String> columnNames) throws DatabaseManagementException {
+    public void select(ArrayList<String> columnNames, AST.whereCondition condition) throws DatabaseManagementException {
         ArrayList<Integer> columnIndexes = getColumnIndexes(columnNames);
+        int conditionIndex = -1;
+        if (condition != null) {
+            conditionIndex = getColumnIndexes(new ArrayList<String>(Arrays.asList(condition.columnName))).get(0);
+        }
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(this.file));
             String line = reader.readLine();
 
             while (line != null) {
-                System.out.println(buildRowLine(line, columnIndexes));
+                String row = buildRowLine(line, columnIndexes, condition, conditionIndex);
+                if (row != null) {
+                    System.out.println(row);
+                }
                 line = reader.readLine();
             }
         } catch (IOException e) {
@@ -155,18 +162,33 @@ public class Table {
         return columnIndexes;
     }
 
-    private String buildRowLine(String line, ArrayList<Integer> columnIndexes) {
+    private String buildRowLine(String line, ArrayList<Integer> columnIndexes, AST.whereCondition condition, int conditionIndex) {
         String[] values = line.split(";", -1);
         StringBuilder row = new StringBuilder();
 
         for (int i = 0; i < columnDefinitions.size(); i++) {
             if (columnIndexes.contains(i) || columnIndexes.isEmpty()) {
+                if (conditionIndex == i && !checkCondition(values[i], condition)) {
+                    return null;
+                }
                 row.append(values[i]);
                 row.append(" ".repeat(Math.max(LINE_WIDTH - values[i].length(), 0)));
             }
         }
 
         return row.toString();
+    }
+
+    private boolean checkCondition(String columnValue, AST.whereCondition condition) {
+        switch (condition.operator) {
+            case "=":
+                return columnValue.equals(condition.value);
+            case "<":
+                return columnValue.compareTo(condition.value) > 0;
+            case ">":
+                return columnValue.compareTo(condition.value) < 0;
+        }
+        return false;
     }
 
     private void appendLines(ArrayList<String> lines) throws DatabaseManagementException {

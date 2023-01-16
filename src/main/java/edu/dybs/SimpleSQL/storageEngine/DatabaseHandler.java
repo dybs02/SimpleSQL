@@ -65,13 +65,13 @@ public class DatabaseHandler {
         table.insert(columnNames, values);
     }
 
-    public static void selectColumns(String tableName, ArrayList<String> columnNames) throws DatabaseManagementException {
+    public static void selectColumns(String tableName, ArrayList<String> columnNames, AST.whereCondition condition) throws DatabaseManagementException {
         Table table = currentDB.getTable(tableName);
         if (table == null) {
             throw new DatabaseManagementException("Table does not exist");
         }
 
-        table.select(columnNames);
+        table.select(columnNames, condition);
     }
 
     private static void deleteDir(File element) {
