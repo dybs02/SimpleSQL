@@ -130,10 +130,13 @@ public class Table {
             String line = reader.readLine();
 
             while (line != null) {
-                String row = buildRowLine(line, columnIndexes, condition);
-                if (row != null) {
+                String[] lineArray = line.split(";", -1);
+                String row = buildRowLine(lineArray, columnIndexes);
+
+                if (isTrue(condition, lineArray)) {
                     System.out.println(row);
                 }
+
                 line = reader.readLine();
             }
         } catch (IOException e) {
@@ -158,38 +161,47 @@ public class Table {
         return columnIndexes;
     }
 
-    private String buildRowLine(String line, ArrayList<Integer> columnIndexes, AST.whereCondition condition) throws DatabaseManagementException {
-        int conditionIndex = -1;
-        if (condition != null) {
-            conditionIndex = getColumnIndexes(new ArrayList<>(Arrays.asList(condition.columnName))).get(0);
-        }
-
-        String[] values = line.split(";", -1);
-        StringBuilder row = new StringBuilder();
+    private ArrayList<String> getRowValues(String[] lineArray, ArrayList<Integer> columnIndexes) {
+        ArrayList<String> rowValues = new ArrayList<>();
 
         for (int i = 0; i < columnDefinitions.size(); i++) {
             if (columnIndexes.contains(i) || columnIndexes.isEmpty()) {
-                if (conditionIndex == i && !checkCondition(values[i], condition)) {
-                    return null;
-                }
-                row.append(values[i]);
-                row.append(" ".repeat(Math.max(LINE_WIDTH - values[i].length(), 0)));
+                rowValues.add(lineArray[i]);
             }
+        }
+
+        return rowValues;
+    }
+
+    private String buildRowLine(String[] lineArray, ArrayList<Integer> columnIndexes) {
+        StringBuilder row = new StringBuilder();
+
+        for (String value : getRowValues(lineArray, columnIndexes)) {
+            row.append(value);
+            row.append(" ".repeat(Math.max(LINE_WIDTH - value.length(), 0)));
         }
 
         return row.toString();
     }
 
-    private boolean checkCondition(String columnValue, AST.whereCondition condition) {
+    private boolean isTrue(AST.whereCondition condition, String[] row) throws DatabaseManagementException {
+        if (condition == null) {
+            return true;
+        }
+
+        int rowIndex = getColumnIndexes(new ArrayList<>(Arrays.asList(condition.columnName))).get(0);
+        String rowValue = row[rowIndex];
+
         switch (condition.operator) {
             case "=":
-                return columnValue.equals(condition.value);
+                return rowValue.equals(condition.value);
             case "<":
-                return columnValue.compareTo(condition.value) > 0;
+                return rowValue.compareTo(condition.value) < 0;
             case ">":
-                return columnValue.compareTo(condition.value) < 0;
+                return rowValue.compareTo(condition.value) > 0;
         }
-        return false;
+
+        return true;
     }
 
     private void appendLines(ArrayList<String> lines) throws DatabaseManagementException {
@@ -210,9 +222,5 @@ public class Table {
         ArrayList<String> l = new ArrayList<>();
         l.add(line);
         appendLines(l);
-    }
-
-    private void readLine() {
-
     }
 }
