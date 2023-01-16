@@ -74,6 +74,15 @@ public class DatabaseHandler {
         table.select(columnNames, condition);
     }
 
+    public static void deleteRows(String tableName, AST.whereCondition condition) throws DatabaseManagementException {
+        Table table = currentDB.getTable(tableName);
+        if (table == null) {
+            throw new DatabaseManagementException("Table does not exist");
+        }
+
+        table.deleteRows(condition);
+    }
+
     private static void deleteDir(File element) {
         if (element.isDirectory()) {
             for (File sub : element.listFiles()) {

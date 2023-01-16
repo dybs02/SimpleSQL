@@ -54,6 +54,7 @@ public class Parser {
 
     /**
      * statement : createStatement | dropStatement | insertStatement | selectStatement
+     *              | deleteStatement
      */
     private AST.Statement statement() throws InvalidSyntaxException {
         switch (currentToken.type) {
@@ -65,6 +66,8 @@ public class Parser {
                 return insertStatement();
             case SELECT:
                 return selectStatement();
+            case DELETE:
+                return deleteStatement();
         }
         return null;
     }
@@ -254,7 +257,7 @@ public class Parser {
     }
 
     /**
-     * selectStatement : SELECT (ASTERISK | columnNames) FROM VARIABLE WHERE condition
+     * selectStatement : SELECT (ASTERISK | columnNames) FROM VARIABLE (WHERE condition)?
      */
     private AST.Statement selectStatement() throws InvalidSyntaxException {
         assertPop(Token.Type.SELECT);
@@ -294,5 +297,22 @@ public class Parser {
         String value = valueField();
 
         return new AST.whereCondition(columnName.content, operator.content, value);
+    }
+
+    /**
+     * deleteStatement : DELETE FROM VARIABLE (WHERE condition)?
+     */
+    private AST.deleteStatement deleteStatement() throws InvalidSyntaxException {
+        assertPop(Token.Type.DELETE);
+        assertPop(Token.Type.FROM);
+        Token tableName = assertPop(Token.Type.VARIABLE);
+
+        AST.whereCondition condition = null;
+        if (currentToken.type == Token.Type.WHERE) {
+            assertPop(Token.Type.WHERE);
+            condition = condition();
+        }
+
+        return new AST.deleteStatement(tableName.content, condition);
     }
 }

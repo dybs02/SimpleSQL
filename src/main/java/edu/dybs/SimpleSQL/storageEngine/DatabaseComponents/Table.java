@@ -3,6 +3,7 @@ package edu.dybs.SimpleSQL.storageEngine.DatabaseComponents;
 import edu.dybs.SimpleSQL.exceptions.DatabaseManagementException;
 import edu.dybs.SimpleSQL.queryEngine.AST;
 import edu.dybs.SimpleSQL.queryEngine.Token;
+import edu.dybs.SimpleSQL.storageEngine.DatabaseHandler;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -182,6 +183,40 @@ public class Table {
         }
 
         return row.toString();
+    }
+
+    public void deleteRows(AST.whereCondition condition) throws DatabaseManagementException {
+        ArrayList<String> linesToKeep = new ArrayList<>();
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(this.file));
+            reader.readLine();
+            reader.readLine();
+            String line = reader.readLine();
+
+            while (line != null) {
+                ArrayList<String> rowValues = getRowValues(line.split(";", -1), new ArrayList<>());
+                if (isTrue(condition, rowValues.toArray(new String[0]))) {
+                    line = reader.readLine();
+                    continue;
+                }
+
+                StringBuilder row = new StringBuilder();
+                for (String rowValue : rowValues) {
+                    row.append(rowValue).append(";");
+                }
+                linesToKeep.add(row.toString());
+
+                line = reader.readLine();
+            }
+        } catch (IOException e) {
+            throw new DatabaseManagementException("Unable to access file: " + this.file.getName(), this.name);
+        }
+
+        // replace old file with new one
+        DatabaseHandler.dropTable(this.name);
+        new Table(this.file.toPath().getParent(), this.name, this.columnDefinitions);
+        appendLines(linesToKeep);
     }
 
     private boolean isTrue(AST.whereCondition condition, String[] row) throws DatabaseManagementException {

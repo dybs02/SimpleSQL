@@ -44,6 +44,11 @@ public class Interpreter {
                         ((AST.selectStatement) query).columnNames,
                         ((AST.selectStatement) query).condition
                 );
+            } else if (query instanceof AST.deleteStatement) {
+                DatabaseHandler.deleteRows(
+                        ((AST.deleteStatement) query).tableName,
+                        ((AST.deleteStatement) query).condition
+                );
             }
         }
     }

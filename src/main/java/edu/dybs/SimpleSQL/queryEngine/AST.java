@@ -91,4 +91,14 @@ public class AST {
             this.value = value;
         }
     }
+
+    public static class deleteStatement extends Statement {
+        public String tableName;
+        public whereCondition condition;
+
+        public deleteStatement(String tableName, whereCondition condition) {
+            this.tableName = tableName;
+            this.condition = condition;
+        }
+    }
 }
