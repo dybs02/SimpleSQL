@@ -124,17 +124,13 @@ public class Table {
 
     public void select(ArrayList<String> columnNames, AST.whereCondition condition) throws DatabaseManagementException {
         ArrayList<Integer> columnIndexes = getColumnIndexes(columnNames);
-        int conditionIndex = -1;
-        if (condition != null) {
-            conditionIndex = getColumnIndexes(new ArrayList<String>(Arrays.asList(condition.columnName))).get(0);
-        }
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(this.file));
             String line = reader.readLine();
 
             while (line != null) {
-                String row = buildRowLine(line, columnIndexes, condition, conditionIndex);
+                String row = buildRowLine(line, columnIndexes, condition);
                 if (row != null) {
                     System.out.println(row);
                 }
@@ -162,7 +158,12 @@ public class Table {
         return columnIndexes;
     }
 
-    private String buildRowLine(String line, ArrayList<Integer> columnIndexes, AST.whereCondition condition, int conditionIndex) {
+    private String buildRowLine(String line, ArrayList<Integer> columnIndexes, AST.whereCondition condition) throws DatabaseManagementException {
+        int conditionIndex = -1;
+        if (condition != null) {
+            conditionIndex = getColumnIndexes(new ArrayList<>(Arrays.asList(condition.columnName))).get(0);
+        }
+
         String[] values = line.split(";", -1);
         StringBuilder row = new StringBuilder();
 
