@@ -115,6 +115,7 @@ public class Table {
         int i = 0;
 
         for (String value : valueDef.valueFields) {
+            value = value.replace("'", "");
             template = template.replace("{" + i + "}", value); // TODO check type
 
             i++;
