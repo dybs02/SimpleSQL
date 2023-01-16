@@ -1,6 +1,6 @@
 package edu.dybs.SimpleSQL.exceptions;
 
-public class DatabaseManagementException extends Exception {
+public class DatabaseManagementException extends SimpleSQLException {
     public String tableName;
 
     public DatabaseManagementException(String msg) {

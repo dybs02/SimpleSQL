@@ -1,6 +1,6 @@
 package edu.dybs.SimpleSQL.exceptions;
 
-public class InvalidCharacterSequenceException extends Exception {
+public class InvalidCharacterSequenceException extends SimpleSQLException {
     public String syntaxError;
     public String input;
 
